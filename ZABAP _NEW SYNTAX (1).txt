@@ -1,0 +1,1052 @@
+*&---------------------------------------------------------------------*
+*& Report ZABAP_NEW_SYNTAX
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZABAP_NEW_SYNTAX.
+
+*Inline Declarations
+***************************  new SELECT syntax  *******************.******
+*SELECT carrid,
+*       connid,
+*       countryfr,
+*       countryto
+*  FROM spfli
+*  INTO TABLE @data(lt_spfli_new) UP TO 3 ROWS.
+**
+***************************** ALV display *******************************
+*CALL METHOD cl_salv_table=>factory
+*  EXPORTING
+*    list_display = if_salv_c_bool_sap=>false
+*  IMPORTING
+*    r_salv_table = data(lo_alv_new)
+*  CHANGING
+*    t_table      = lt_spfli_new.
+*
+*data(lo_display) = lo_alv_new->get_display_settings( ).
+*lo_display->set_list_header( 'output of new SELECT query syntax' ).
+*
+*lo_alv_new->display( ).
+***
+**
+***
+************************  new WORK AREA syntax  *************************
+*SKIP 1.
+*WRITE :/ 'Output of new WORK AREA syntax'.
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+*
+*LOOP AT lt_spfli_new INTO data(ls_spfi_new).
+*  WRITE : /    ls_spfi_new-carrid,
+*            15 ls_spfi_new-connid,
+*            30 ls_spfi_new-countryfr,
+*            45 ls_spfi_new-countryto.
+*ENDLOOP.
+************************  new SELECT SINGLE syntax **********************
+*SKIP 1.
+*WRITE:/ 'Output of new SELECT SINGLE query'.
+*SKIP 1.
+*
+*SELECT SINGLE countryfr,
+*              countryto
+*         FROM spfli
+*         INTO (@data(lv_from), @data(lv_to))
+*        WHERE carrid = 'AA' AND
+*              connid = '17'.
+*
+*WRITE:/    'countryfr',
+*        15 'countryto'.
+*WRITE:/    lv_from,
+*        15 lv_to.
+*Table Expressions............................................................................................................................................................
+*WRITE:/'***********************************************************************'.
+*SELECT carrid,
+*       connid,
+*       countryfr,
+*       countryto
+*  FROM spfli
+*  INTO TABLE @DATA(lt_spfli_new) UP TO 3 ROWS.
+**
+*SKIP 1.
+*WRITE :/ 'Output of SELECT query'.
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+**
+*LOOP AT lt_spfli_new INTO DATA(ls_spfli_new).
+*  WRITE : /    ls_spfli_new-carrid,
+*            15 ls_spfli_new-connid,
+*            30 ls_spfli_new-countryfr,
+*            45 ls_spfli_new-countryto.
+*ENDLOOP.
+*CLEAR ls_spfli_new.
+*WRITE:/'***********************************************************************'.
+*SKIP 1.
+****************************  new read table with index (data found)  *************************
+*TRY.
+*    ls_spfli_new = lt_spfli_new[ 2 ].
+*  CATCH cx_sy_itab_line_not_found.
+*    WRITE:/ 'data not found'.
+*ENDTRY.
+*
+*WRITE:/ 'new read table with index 2'.
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+*WRITE : /    ls_spfli_new-carrid,
+*          15 ls_spfli_new-connid,
+*          30 ls_spfli_new-countryfr,
+*          45 ls_spfli_new-countryto.
+*CLEAR ls_spfli_new.
+**WRITE:/'***********************************************************************'.
+****************************  new read table with index (datanot found)  *************************
+*WRITE:/ 'new read table with index 9'.
+*
+*TRY.
+*    ls_spfli_new = lt_spfli_new[ 9 ].
+*  CATCH cx_sy_itab_line_not_found.
+*    WRITE:/ 'data not found'.
+*ENDTRY.
+***
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+*WRITE : /    ls_spfli_new-carrid,
+*          15 ls_spfli_new-connid,
+*          30 ls_spfli_new-countryfr,
+*          45 ls_spfli_new-countryto.
+*CLEAR ls_spfli_new.
+*WRITE:/'***********************************************************************'.
+*
+**************************** new read table with key (data found) *******************************
+*SKIP 1.
+*
+*TRY.
+*    ls_spfli_new = lt_spfli_new[ carrid = 'AZ' connid = '0555' ].
+*  CATCH cx_sy_itab_line_not_found.
+*    WRITE:/ 'data not found'.
+*ENDTRY.
+*
+*WRITE:/ 'new read table with key  carrid = ''AZ'' connid = ''0555'''.
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+*WRITE : /    ls_spfli_new-carrid,
+*          15 ls_spfli_new-connid,
+*          30 ls_spfli_new-countryfr,
+*          45 ls_spfli_new-countryto.
+*CLEAR ls_spfli_new.
+*WRITE:/'***********************************************************************'.
+**************************** new read table with key (data not found) *******************************
+*SKIP 1.
+*WRITE:/ 'new read table with key  carrid = ''ZZ'' connid = ''0789'''.
+*TRY.
+*    ls_spfli_new = lt_spfli_new[ carrid = 'ZZ' connid = '0789' ].
+*  CATCH cx_sy_itab_line_not_found.
+*    WRITE:/ 'data not found'.
+*ENDTRY.
+*SKIP 1.
+*WRITE :/   'Airline code',
+*        15 'Flight Number',
+*        30 'Country from',
+*        45 'Countr to'.
+*WRITE : /    ls_spfli_new-carrid,
+*          15 ls_spfli_new-connid,
+*          30 ls_spfli_new-countryfr,
+*          45 ls_spfli_new-countryto.
+*CLEAR ls_spfli_new.
+*WRITE:/'***********************************************************************'.
+**************************** Does data EXIST ? *******************************
+*SKIP 1.
+*
+*IF line_exists( lt_spfli_new[ carrid = 'AX' connid = '0777' ] ).
+*  WRITE:/ 'Does data EXIST ?'.
+*  WRITE:/ 'data does EXISTS for  carrid = ''AX'' connid = ''0777'''.
+*ELSE.
+*  WRITE:/ 'Does data EXIST ?'.
+*  WRITE:/ 'data does not EXISTS for  carrid = ''AX'' connid = ''0777'''.
+*ENDIF.
+*CLEAR ls_spfli_new.
+*WRITE:/'***********************************************************************'.
+***************************** Get Line index (data found)*******************************
+*SKIP 1.
+*
+*DATA(indx) = line_index( lt_spfli_new[ carrid = 'AZ' connid = '0555' ] ).
+*IF indx IS NOT INITIAL.
+*  WRITE:/ 'Get LINE index'.*  WRITE:/ indx,'is LINE index for carrid = ''AZ'' connid = ''0555'''.
+*ELSE.
+*  WRITE:/ indx,'is LINE index for carrid = ''AZ'' connid = ''0789'''.
+*ENDIF.
+**
+**************************** Get table index (data not found)*******************************
+*SKIP 1.
+*try.
+*DATA(indx1) = line_index( lt_spfli_new[ carrid = 'ZZ' connid = '0789' ] ).
+* CATCH cx_sy_itab_line_not_found.
+*   WRITE:/ 'exception raised'.
+*endtry.
+* WRITE:/ indx1,'is LINE index for carrid = ''ZZ'' connid = ''0789'''.
+*WRITE:/'***********************************************************************'.
+**Value Operator...............................................................................................................................................................
+SKIP 1.
+WRITE:/'*****************************  explicit type ****************************************'.
+SKIP 1.
+
+TYPES: BEGIN OF ty_type_1,
+         comp1 TYPE i,
+         comp2 TYPE string,
+       END OF ty_type_1.
+
+TYPES: tty_type_1 TYPE TABLE OF ty_type_1 WITH EMPTY KEY .
+
+"feeling internal table with VALUE operator with explicit type specification and strucure declared inline
+
+DATA(ls_tab_1) = VALUE ty_type_1( comp1 = 1 comp2 = 'name1' ).
+
+WRITE:/ 'structure'.
+WRITE:/ '     comp1' , ' comp2'.
+WRITE:/ ls_tab_1-comp1, ls_tab_1-comp2.
+SKIP 1.
+*
+"filling internal table with VALUE operator with explicit type specification and internal table declared inline
+clear ls_tab_1.
+DATA(lt_tab_1) = VALUE tty_type_1( ( comp1 = 1 comp2 = 'name1' )
+                                   ( comp1 = 2 comp2 = 'name2' )
+                                   ( comp1 = 3 comp2 = 'name3' ) ).
+WRITE:/ 'internal table'.
+WRITE:/ '     comp1' , ' comp2'.
+LOOP AT lt_tab_1 INTO ls_tab_1.
+  WRITE:/ ls_tab_1-comp1, ls_tab_1-comp2.
+ENDLOOP.
+
+*" inital value with explicit type
+skip 1.
+WRITE:/ 'internal table inital'.
+
+data(lt_tab_3) = VALUE tty_type_1( ).
+
+WRITE:/ '     comp1' , ' comp2'.
+LOOP AT lt_tab_3 INTO data(ls_tab_3).
+  WRITE:/ ls_tab_3-comp1, ls_tab_3-comp2.
+ENDLOOP.
+
+SKIP 1.
+WRITE:/'*****************************  using # ****************************************'.
+SKIP 1.
+**
+TYPES: BEGIN OF ty_type_2,
+         comp1 TYPE i,
+         comp2 TYPE string,
+       END OF ty_type_2.
+
+TYPES: tty_type_2 TYPE TABLE OF ty_type_2 WITH EMPTY KEY.
+
+DATA: ls_tab_2 TYPE ty_type_2,
+      lt_tab_2 TYPE TABLE OF ty_type_2.
+
+" feeling structure with VALUE operator and #
+WRITE:/ 'structure'.
+
+ls_tab_2 = VALUE #( comp1 = 1 comp2 = 'name1' ).
+
+WRITE:/ '     comp1' , ' comp2'.
+WRITE:/ ls_tab_2-comp1, ls_tab_2-comp2.
+SKIP 1.
+
+" feeling internal table with VALUE operator and #
+WRITE:/ 'internal table'.
+
+lt_tab_2 = VALUE #( ( comp1 = 1 comp2 = 'name1' )
+                    ( comp1 = 2 comp2 = 'name2' )
+                    ( comp1 = 3 comp2 = 'name3' ) ).
+
+clear: ls_tab_2.
+WRITE:/ '     comp1' , ' comp2'.
+LOOP AT lt_tab_2 INTO ls_tab_2.
+  WRITE:/ ls_tab_2-comp1, ls_tab_2-comp2.
+ENDLOOP.
+SKIP 1.
+*
+*
+*
+SKIP 1.
+WRITE:/'**************************** Append operation ********************************************'.
+SKIP 1.
+
+WRITE:/ 'internal table'.
+" feeling internal table with VALUE operator and #
+lt_tab_2 = VALUE #( ( comp1 = 1 comp2 = 'name1' )
+                    ( comp1 = 2 comp2 = 'name2' ) ).
+
+lt_tab_2 = VALUE #( BASE lt_tab_2
+                   ( comp1 = 3 comp2 = 'name3' )
+                   ( comp1 = 4 comp2 = 'name4' ) ).
+
+WRITE:/ '     comp1' , ' comp2'.
+LOOP AT lt_tab_2 INTO ls_tab_2.
+  WRITE:/ ls_tab_2-comp1, ls_tab_2-comp2.
+ENDLOOP.
+*
+**
+*SKIP 1.
+*WRITE:/'************************* lines of internal table operation *****************************'.
+*SKIP 1.
+*
+*WRITE:/ 'internal table'.
+*" feeling internal table with VALUE operator and #
+*DATA(lt_tab3) = VALUE tty_type_1( ( comp1 = 5 comp2 = 'name5' )
+*                                  ( comp1 = 6 comp2 = 'name6' )
+*                                  ( LINES OF lt_tab_2 ) ).
+*
+*WRITE:/ '     comp1' , ' comp2'.
+*LOOP AT lt_tab3 INTO DATA(ls_tab3).
+*  WRITE:/ ls_tab3-comp1, ls_tab3-comp2.
+*ENDLOOP.
+*SKIP 1.
+*
+*SKIP 1.
+*WRITE:/'***************************** Create Range Table *****************************************'.
+*SKIP 1.
+*
+*
+*DATA: lt_tab TYPE RANGE OF string.
+*
+*lt_tab = VALUE #( sign = 'I' option = 'EQ' ( low = 'name1')
+*                                           ( low = 'name2')
+*                                           ( low = 'name3')
+*                                           ( low = 'name4') ).
+*WRITE:/ 'sign' , 'option', 'low'.
+*LOOP AT lt_tab INTO DATA(ls_tab).
+*  WRITE:/ ls_tab-sign, ls_tab-option, ls_tab-low, ls_tab-high .
+*ENDLOOP.
+*
+*SKIP 1.
+*WRITE:/'******************************************************************************************'.
+*SKIP 1.
+
+*FOR Expressions...............................................................................................................................................................
+*TYPES: BEGIN OF ty_str,
+*         comp1 TYPE i,
+*         comp2 TYPE string,
+*       END OF ty_str.
+*
+*DATA: lt_tab  TYPE TABLE OF ty_str,
+*      ls_tab  TYPE ty_str,
+*      lt_name TYPE TABLE OF string.
+*
+*lt_tab = VALUE #( ( comp1 = 1 comp2 = 'name1' )
+*                  ( comp1 = 2 comp2 = 'name2' )
+*                  ( comp1 = 3 comp2 = 'name3' )
+*                  ( comp1 = 4 comp2 = 'name4' ) ).
+*
+*SKIP 1.
+*WRITE:/'***************************** lt_tab internal table ******************************************'.
+*SKIP 1.
+*
+*LOOP AT lt_tab INTO ls_tab.
+*  WRITE:/ ls_tab-comp1,ls_tab-comp2.
+*ENDLOOP.
+**
+*SKIP 1.
+*WRITE:/'***************************** lt_name internal table ******************************************'.
+*SKIP 1.
+*
+*lt_name = VALUE #( FOR ls_tab_tmp IN lt_tab   " note: ls_tab dosen't appear to have been declared but it declared implicitly
+*                   WHERE ( comp1 > 2 )
+*                         ( ls_tab_tmp-comp2 ) ).
+*
+*LOOP AT lt_name INTO DATA(ls_name).
+*  WRITE:/ ls_name.
+*ENDLOOP.
+**
+*SKIP 1.
+*WRITE:/'***************************** Create Range Table *****************************************'.
+*SKIP 1.
+*
+*DATA: lr_name TYPE RANGE OF string.
+*
+*lr_name = VALUE #( FOR ls_tab_tmp IN lt_tab
+*                 ( sign = 'I'
+*                   option = 'EQ'
+*                   low = ls_tab_tmp-comp2 ) ).
+*
+*LOOP AT lr_name INTO DATA(ls_name_r).
+*  WRITE:/ ls_name_r-sign, ls_name_r-option, ls_name_r-low, ls_name_r-high .
+*ENDLOOP.
+*
+*SKIP 1.
+*WRITE:/'*************************** alternative to Do..While *************************************'.
+*SKIP 1.
+*
+*CLEAR: lt_tab .
+*
+*lt_tab = VALUE #( FOR lv_count = 1 THEN  lv_count + 1 UNTIL lv_count > 10
+*                ( comp1 = lv_count comp2 = 'comp' && lv_count ) ).
+*
+*LOOP AT lt_tab INTO ls_tab.
+*  WRITE:/ ls_tab-comp1, ls_tab-comp2.
+*ENDLOOP.
+*
+
+*CORRESPONDING Operator.......................................................................................................................................................
+*TYPES: BEGIN OF ty_TAB1,
+*         comp1 TYPE i,
+*         comp2 TYPE string,
+*       END OF ty_TAB1.
+*
+*TYPES: BEGIN OF ty_TAB2,
+*         comp1 TYPE i,
+*         comp2 TYPE string,
+*         comp3 TYPE char5,
+*       END OF ty_TAB2.
+*TYPES: tty_tab2 TYPE TABLE OF ty_tab2 WITH EMPTY KEY.
+*
+*DATA: ls_TAB1 TYPE ty_TAB1,
+*      lt_TAB1 TYPE TABLE OF ty_TAB1,
+*      ls_TAB2 TYPE ty_TAB2,
+*      lt_TAB2 TYPE TABLE OF ty_TAB2.
+*
+*
+*ls_TAB1 = VALUE #( comp1 = 1 comp2 = 'name1' ).
+*
+*lt_TAB1 = VALUE #( ( comp1 = 1 comp2 = 'name1' )
+*                   ( comp1 = 2 comp2 = 'name2' )
+*                   ( comp1 = 3 comp2 = 'name3' ) ).
+**
+*ls_TAB2 = VALUE #( comp1 = 4 comp2 = 'name4' comp3 = 'addr4' ).
+*
+*lt_TAB2 = VALUE #( ( comp1 = 4 comp2 = 'name4' comp3 = 'addr4' )
+*                   ( comp1 = 5 comp2 = 'name5' comp3 = 'addr5' )
+*                   ( comp1 = 6 comp2 = 'name6' comp3 = 'addr6' ) ).
+*
+*
+*
+*WRITE:/ '*************************** ls_TAB1  **********************************************'.
+*WRITE:/ '      comp1', 'comp2'.
+*WRITE:/ ls_TAB1-comp1, ls_TAB1-comp2.
+*
+*SKIP 1.
+*WRITE:/ '*************************** ls_TAB2  ***********************************************'.
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+*
+*SKIP 1.
+*WRITE:/ '************* MOVE-CORRESPONDING ls_TAB1 to ls_TAB2 ********************************'.
+*MOVE-CORRESPONDING ls_TAB1 TO ls_TAB2.
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+**
+*SKIP 1.
+*WRITE:/ '************* ls_TAB2 = corresponding #( base ( ls_TAB2 ) ls_TAB1 ) ****************'.
+*ls_TAB2 = CORRESPONDING #( BASE ( ls_TAB2 ) ls_TAB1 ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+*
+*SKIP 1.
+*WRITE:/ '************* ls_TAB2 = corresponding #( ls_TAB1 ) *********************************'.
+*ls_TAB2 = CORRESPONDING #( ls_TAB1 ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+**
+*SKIP 1.
+*WRITE:/ '** data(ls_TAB3) = CORRESPONDING ty_tab2( VALUE ty_tab2( comp1 = 7 comp2 = ''name7'' comp3 = ''addr7'' ) )**'.
+*data(ls_TAB3) = CORRESPONDING ty_tab2( VALUE ty_tab2( comp1 = 7 comp2 = 'name7' comp3 = 'addr7') ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB3-comp1, ls_TAB3-comp2, ls_TAB3-comp3.
+**
+*SKIP 1.
+*WRITE:/ '********** ls_TAB2 = corresponding #( ls_TAB1 MAPPING comp3 = comp2 ) **************'.
+*ls_TAB2 = CORRESPONDING #( ls_TAB1 MAPPING comp3 = comp2 ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+**
+*SKIP 1.
+*WRITE:/ '********** ls_TAB2 = corresponding #( ls_TAB1 EXCEPT comp1 ) ***********************'.
+*ls_TAB2 = CORRESPONDING #( ls_TAB1 EXCEPT comp1 ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+**
+*SKIP 1.
+*WRITE:/ '*************************** Internal table *****************************************'.
+*SKIP 1.
+*WRITE:/ '*************************** lt_TAB1 *****************************************'.
+*SKIP 1.
+*WRITE:/ '      comp1', 'comp2'.
+*LOOP AT lt_TAB1 INTO ls_TAB1.
+*  WRITE:/ ls_TAB1-comp1, ls_TAB1-comp2.
+*ENDLOOP.
+*SKIP 1.
+*WRITE:/ '*************************** lt_TAB2 *****************************************'.
+*SKIP 1.
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*LOOP AT lt_TAB2 INTO ls_TAB2.
+*  WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+*ENDLOOP.
+**
+*SKIP 1.
+*WRITE:/ '******* lt_TAB2 = corresponding #( APPENDING ( lt_TAB2 ) lt_TAB1 ) ********************'.
+*SKIP 1.
+*lt_TAB2 = CORRESPONDING #( APPENDING ( lt_TAB2 ) lt_TAB1 ).
+*WRITE:/ '      comp1', 'comp2', 'comp3'.
+*LOOP AT lt_TAB2 INTO ls_TAB2.
+*  WRITE:/ ls_TAB2-comp1, ls_TAB2-comp2, ls_TAB2-comp3.
+*ENDLOOP.
+*REDUCE Operator..............................................................................................................................................................
+*TYPES: BEGIN OF ty_str,
+*         comp1 TYPE i,
+*         comp2 TYPE string,
+*       END OF ty_str.
+*
+*DATA: lt_tab  TYPE TABLE OF ty_str,
+*      ls_tab  TYPE ty_str.
+*
+*lt_tab = VALUE #( ( comp1 = 1 comp2 = 'name1' )
+*                  ( comp1 = 2 comp2 = 'name2' )
+*                  ( comp1 = 3 comp2 = 'name3' )
+*                  ( comp1 = 4 comp2 = 'name4' ) ).
+**
+*cl_demo_output=>write( '*************************** Internal table *********************************' ).
+*
+*cl_demo_output=>write( lt_TAB ).
+*
+*cl_demo_output=>write( '********* with Reduce operator for counting  WHERE ( comp1 > 2 )************' ).
+*
+*
+*DATA(lv_count) = REDUCE int2( INIT i = 0 FOR ls_tab_tmp IN lt_tab
+*                             WHERE ( comp1 > 2 )
+*                              NEXT i = i + 1 ).
+*
+*cl_demo_output=>display( lv_count ).
+**
+**
+*DATA(lv_total) = REDUCE int2( INIT i = 0 FOR ls_tab_tmp IN lt_tab
+*                             WHERE ( comp1 > 2 )
+*                              NEXT i = i + ls_tab_tmp-comp1 ).
+*
+*cl_demo_output=>write( lv_total ).
+*
+*cl_demo_output=>display( ).
+
+*COND and SWITCH Operator......................................................................................................................................................
+*TYPES: BEGIN OF ty_str,
+*         id      TYPE i,
+*         mark    TYPE string,
+*         result  TYPE string,
+*         message TYPE string,
+*       END OF ty_str.
+*
+*DATA: lt_tab  TYPE TABLE OF ty_str,
+*      ls_tab  TYPE ty_str,
+*      lt_name TYPE TABLE OF string,
+*      lt_tab1 TYPE TABLE OF ty_str,
+*      lt_tab2 TYPE TABLE OF ty_str.
+*
+*cl_demo_output=>write( '************************ internal table **********************************' ).
+*lt_tab = VALUE #( ( id = 1 mark = 30 )
+*                  ( id = 2 mark = 60 )
+*                  ( id = 3 mark = 85 )
+*                  ( id = 4 mark = 20 ) ).
+**
+*cl_demo_output=>write( lt_tab ).
+*
+*cl_demo_output=>write( '****************************** COND ***************************************' ).
+*lt_tab1 = VALUE #( FOR ls_tab_tmp IN lt_tab
+*                 ( id     = ls_tab_tmp-id
+*                   mark   = ls_tab_tmp-mark
+*                   result = COND string( WHEN ls_tab_tmp-mark >= 40 AND ls_tab_tmp-mark < 80 THEN 'PASS'
+*                                         WHEN ls_tab_tmp-mark >= 80 THEN 'PASS with distinction'
+*                                         ELSE 'FAIL' ) ) ).
+*cl_demo_output=>display( lt_tab1 ).
+**
+*
+*cl_demo_output=>write( '***************************** SWITCH ****************************************' ).
+*lt_tab2 = VALUE #( FOR ls_tab1_tmp IN lt_tab1
+*                 ( id      = ls_tab1_tmp-id
+*                   mark    = ls_tab1_tmp-mark
+*                   result  = ls_tab1_tmp-result
+*                   message = SWITCH string( ls_tab1_tmp-result
+*                                            WHEN 'PASS' THEN 'Congratulations'
+*                                            WHEN 'PASS with distinction' THEN 'Congratulations'
+*                                            ELSE 'Try Again' ) ) ).
+*cl_demo_output=>display( lt_tab2 ).
+*
+*
+*cl_demo_output=>write( '****************************** COND with Exception ****************************************' ).
+*lt_tab = VALUE #( ( id = 1 mark = 30 )
+*                  ( id = 2 mark = 85 )
+*                  ( id = 3 mark = 00 )
+*                  ( id = 4 mark = 20 ) ).
+*TRY.
+*    lt_tab1 = VALUE #( FOR ls_tab_tmp IN lt_tab
+*                     ( id     = ls_tab_tmp-id
+*                       mark   = ls_tab_tmp-mark
+*                       result = COND string( WHEN ls_tab_tmp-mark >= 40 AND ls_tab_tmp-mark < 80 THEN 'PASS'
+*                                             WHEN ls_tab_tmp-mark >= 80 THEN 'PASS with distinction'
+*                                             WHEN ls_tab_tmp-mark > 0 AND ls_tab_tmp-mark < 40 THEN 'FAIL'
+*                                             ELSE  THROW CX_wrong_condition( ) ) ) ).
+*  CATCH CX_wrong_condition INTO DATA(lo_excptn).
+*    cl_demo_output=>display( lo_excptn->get_text( ) ).
+*ENDTRY.
+**
+*cl_demo_output=>write( lt_tab1 ).
+*
+*cl_demo_output=>display( ).
+
+*STRING Expressions........................................................................................................................................................
+*data: lv_str1 type string,
+*      lv_str2 type string,
+*      lv_str3 type string.
+*
+*lv_str1 = 'Smart'.
+*lv_str2 = 'Logic'.
+*
+*cl_demo_output=>write('****************** using CONCATENATE ***************************').
+*
+*CONCATENATE lv_str1 lv_str2 into lv_str3 SEPARATED BY space.
+*
+*cl_demo_output=>write( lv_str3 ).
+*
+*cl_demo_output=>write('*********************** using && *******************************').
+*clear lv_str3.
+*
+*lv_str3 = lv_str1 && ' ' && lv_str2.
+*
+*cl_demo_output=>write( lv_str3 ).
+*
+*data(lv_str4) = 1 && 1.
+*
+*cl_demo_output=>write( lv_str4 ).
+*
+**CONCATENATE 1 1 into data(lv_str5).
+*
+*cl_demo_output=>write('******************** String Template ***************************' ).
+*
+*cl_demo_output=>write('******************** |{ lv_str1 }{ lv_str2 }| ***************************' ).
+*
+*data(lv_str5) = |{ lv_str1 }{ lv_str2 }|.
+*
+*cl_demo_output=>write( lv_str5 ).
+*
+*cl_demo_output=>write('******************** |{ lv_str1 }  { lv_str2 }| ***************************' ).
+*
+*data(lv_str6) = |{ lv_str1 }  { lv_str2 }|.
+*
+*cl_demo_output=>write( lv_str6 ).
+*
+*cl_demo_output=>write('******************** |Today date: { sy-datum }| ***************************' ).
+*
+*Data(lv_str7) = |Today date: { sy-datum }|.
+*
+*cl_demo_output=>write( lv_str7 ).
+*
+*cl_demo_output=>write('******************** |Today date: { sy-datum date = user }| ***************************' ).
+*
+*Data(lv_str8) = |Today date: { sy-datum date = user }|.
+*
+*cl_demo_output=>write( lv_str8 ).
+*
+*data(lv_str9) = |Name is: { to_upper( lv_str1 ) } |.
+*
+*cl_demo_output=>write( lv_str9 ).
+*
+*cl_demo_output=>display( ).
+
+**EXACT Operator..............................................................................................................................................................
+*cl_demo_output=>write( '**************************** lv_var_1 = ''3ABC'' ***************************************' ).
+*
+*DATA: lv_var_1 TYPE numc4.
+*
+*lv_var_1 = '3ABC'.
+*
+*cl_demo_output=>display( lv_var_1 ).
+*
+*cl_demo_output=>write( '**************************** lv_var_2 = EXACT #( ''3ABC'' ) ****************************' ).
+*
+*
+*DATA: lv_var_2 TYPE numc4.
+*
+*TRY.
+*    lv_var_2 = EXACT #( '3ABC' ).
+*  CATCH cx_sy_conversion_error INTO DATA(lo_expt).
+*    cl_demo_output=>display( lo_expt->get_text( ) ).
+*
+*ENDTRY.
+**
+*cl_demo_output=>display( lv_var_2 ).
+*
+*cl_demo_output=>write( '**************************** lv_date_1 = ''ABCDEFGH'' *************************************' ).
+*
+*DATA: lv_date_1 TYPE dats.
+*
+*lv_date_1 = 'ABCDEFGH'.
+*
+*cl_demo_output=>display( lv_date_1 ).
+*
+*cl_demo_output=>write( '************************ lv_date_2 = EXACT #(''ABCDEFGH'') ********************************' ).
+*
+*
+*DATA: lv_date_2 TYPE dats.
+*TRY.
+*    lv_date_2 = EXACT #( 'ABCDEFGH' ).
+*  CATCH cx_sy_conversion_error INTO DATA(lo_exp).
+*    cl_demo_output=>display( lo_exp->get_text( ) ).
+*ENDTRY.
+*
+*cl_demo_output=>display( lv_date_2 ).
+**
+*
+*cl_demo_output=>write( '**************************** lv_val_1 = 7 / 3 *******************************************' ).
+*
+*DATA: lv_val_1 TYPE i.
+*
+*lv_val_1 = 7 / 3 .
+*
+*cl_demo_output=>display( lv_val_1 ).
+*
+*cl_demo_output=>write( '**************************** lv_val_2 = EXACT #( 7 / 3 ) ********************************' ).
+*
+*DATA:lv_val_2 TYPE i.
+*
+*TRY.
+*    lv_val_2 = EXACT #( 7 / 3 ).
+*  CATCH cx_sy_conversion_error INTO DATA(lo_exp1).
+*    cl_demo_output=>display( lo_exp1->get_text( ) ).
+*ENDTRY.
+*
+*cl_demo_output=>display( lv_val_2 ).
+*
+*cl_demo_output=>display( ).
+
+*CONV Operator...........................................................................................................................................................
+*DATA: lv_date_1 TYPE dats,
+*      lv_date_2 TYPE dats,
+*      lv_count  TYPE i,
+*      lv_helper TYPE char2.
+*
+*lv_count = 2.
+*
+*cl_demo_output=>write('**************************** method with helper variable ***************************************').
+*
+*lv_helper = lv_count.
+*
+*CALL FUNCTION 'HR_PT_ADD_MONTH_TO_DATE'
+*  EXPORTING
+*    dmm_datin = sy-datum
+*    dmm_count = lv_helper    "lv_count gives runtime error
+*    dmm_oper  = '+'
+*    dmm_pos   = 'BEG'
+*  IMPORTING
+*    dmm_daout = lv_date_1.
+*
+*cl_demo_output=>display( lv_date_1 ).
+*
+*cl_demo_output=>write('**************************** method with CONV operator ***************************************').
+*
+**lv_count = 2.
+*
+*CALL FUNCTION 'HR_PT_ADD_MONTH_TO_DATE'
+*  EXPORTING
+*    dmm_datin = sy-datum
+*    dmm_count = CONV char2( lv_count )
+*    dmm_oper  = '+'
+*    dmm_pos   = 'BEG'
+*  IMPORTING
+*    dmm_daout = lv_date_2.
+*
+*cl_demo_output=>display( lv_date_2 ).
+*
+*cl_demo_output=>write('**************************** i <- string **** without CONV operator *********************************').
+*
+*DATA: lv_val_1 TYPE i,
+*      lv_val_2 TYPE string.
+*
+*lv_val_2 = 'ABCD'.
+*
+**lv_val_1 = lv_val_2. " gives runtime error
+*
+*cl_demo_output=>display( lv_date_1 ).
+*
+*cl_demo_output=>write('**************************** i <- string **** with CONV operator ***********************************').
+*
+*TRY.
+*    lv_val_1 = CONV #( lv_val_2 ).
+*
+*  CATCH cx_sy_conversion_error INTO DATA(lo_exp1).
+*
+*    cl_demo_output=>display( lo_exp1->get_text( ) ).
+*ENDTRY.
+*
+*cl_demo_output=>display( lv_val_1 ).
+*
+*cl_demo_output=>write('**************************** decimal without CONV operator ***************************************').
+*
+*DATA(lv_val_3) = 1 / 5.
+*
+*cl_demo_output=>display( lv_val_3 ).
+*
+*cl_demo_output=>write('**************************** decimal with CONV operator ***************************************').
+*
+*DATA(lv_val_4) = CONV decfloat34( 1 / 5 ).
+*
+*cl_demo_output=>display( lv_val_4 ).
+*
+*cl_demo_output=>display( ).
+
+*Filter Operator..............................................................................................................................................................
+*TYPES: BEGIN OF ty_book,
+*         carrid TYPE s_carrid,
+*         connid TYPE s_conn_ID,
+*         fldate TYPE s_date,
+*         class  TYPE s_class,
+*       END OF ty_book.
+*
+*DATA: lt_sbook TYPE SORTED TABLE OF ty_book WITH NON-UNIQUE KEY class.
+*
+*
+*SELECT carrid,
+*       connid,
+*       fldate,
+*        class
+*  FROM sbook
+*  INTO TABLE @lt_sbook
+* WHERE carrid  EQ 'AA' AND
+*        fldate EQ '20230914'.
+*
+*cl_demo_output=>display( lt_sbook ).
+*
+**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+*
+*DATA(lt_itab_filter1) = FILTER #( lt_sbook WHERE class = 'C' ).
+*
+*cl_demo_output=>display( lt_itab_filter1 ).
+**
+**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+*
+*DATA(lt_itab_filter2) = FILTER #( lt_sbook EXCEPT WHERE class = 'C' ).
+*
+*cl_demo_output=>display( lt_itab_filter2 ).
+**
+**""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+**
+*TYPES: BEGIN OF ty_class,
+*         class_fltr TYPE s_class,
+*       END OF ty_class.
+*
+*TYPES: tt_class TYPE SORTED TABLE OF ty_class WITH UNIQUE KEY class_fltr.
+*
+*DATA(lt_filter_class) = VALUE tt_class( ( class_fltr = 'C' )
+*                                        ( class_fltr = 'F' ) ).
+*
+*
+*DATA(lt_itab_filter3) = FILTER #( lt_sbook IN lt_filter_class WHERE class = class_fltr  ).
+*
+*cl_demo_output=>display( lt_itab_filter3 ).
+*
+*cl_demo_output=>display( ).
+
+*""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+**Example 2
+*TYPES: BEGIN OF ty_book,
+*         carrid TYPE s_carrid,
+*         connid TYPE s_conn_ID,
+*         fldate TYPE s_date,
+*         class  TYPE s_class,
+*       END OF ty_book.
+*
+*DATA: lt_sbook TYPE STANDARD TABLE OF ty_book WITH NON-UNIQUE SORTED KEY class COMPONENTS class.
+*
+*SELECT carrid, connid, fldate, class FROM sbook INTO TABLE @lt_sbook WHERE carrid  EQ 'AA' AND fldate EQ '20230914'.
+*
+*cl_demo_output=>write( lt_sbook ).
+*
+*DATA(lt_itab_filter1) = FILTER #( lt_sbook USING KEY class WHERE class = 'C' ).
+*cl_demo_output=>write( lt_itab_filter1 ).
+*DATA(lt_itab_filter2) = FILTER #( lt_sbook EXCEPT USING KEY class  WHERE class = 'C' ).
+*
+*cl_demo_output=>write( lt_itab_filter2 ).
+*cl_demo_output=>display( ).
+**
+**NEW Instance Operator.................................................................................................................................................
+*CLASS lcl_class DEFINITION.
+*  PUBLIC SECTION.
+*    DATA: lv_var TYPE char10.
+*    METHODS:
+*      constructor IMPORTING im_var TYPE char10,
+*      display.
+*ENDCLASS.
+*
+*CLASS lcl_class IMPLEMENTATION.
+*  METHOD constructor.
+*    lv_var = im_var.
+*  ENDMETHOD.
+*
+*  METHOD display .
+*    cl_demo_output=>write( lv_var ).
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*
+*START-OF-SELECTION.
+*
+*  DATA: lo_ref   TYPE REF TO data,
+*        lo_ref_2 TYPE REF TO lcl_class,
+*        lo_ref_4 TYPE REF TO lcl_class.
+*
+*  cl_demo_output=>write( '********************************************* CREATE DATA ''SAP'' *************************************' ).
+*
+*  CREATE DATA lo_ref TYPE string.
+*  lo_ref->* = 'SAP' .
+*
+*  cl_demo_output=>display( lo_ref->* ).
+*
+*  cl_demo_output=>write( '********************************************* NEW string( ''SAP'' ) *************************************' ).
+*
+*  DATA(lo_ref_1) = NEW string( 'SAP' ).
+*
+*  cl_demo_output=>display( lo_ref_1->* ).
+
+*  cl_demo_output=>write( '*************************** CREATE OBJECT lo_ref_1 EXPORTING im_var = ''SAP'' *************************' ).
+*
+*  CREATE OBJECT lo_ref_2
+*    EXPORTING
+*      im_var = 'SAP'.
+*
+*  lo_ref_2->display( ).
+*
+*
+*  cl_demo_output=>write( '**************************** DATA(lo_ref_2) = NEW lcl_class( ''SAP'' ) *********************************' ).
+*
+*  DATA(lo_ref_3) = NEW lcl_class( 'SAP' ).
+*  lo_ref_3->display( ).
+*
+*  cl_demo_output=>write( '**************************** lo_ref_3 = NEW #( ''SAP'' ) ***********************************************' ).
+*
+*  lo_ref_4 = NEW #( 'SAP' ).
+*  lo_ref_4->display( ).
+*
+*
+*  cl_demo_output=>display( ).
+
+*REF operator...............................................................................................................................................................
+*CLASS lcl_class DEFINITION.
+*  PUBLIC SECTION.
+*    DATA: lv_var TYPE char20.
+*    METHODS:
+*      constructor IMPORTING im_var TYPE REF TO data,
+*      display.
+*ENDCLASS.
+*
+*CLASS lcl_class IMPLEMENTATION.
+*  METHOD constructor.
+*    lv_var = im_var->*.
+*  ENDMETHOD.
+*
+*  METHOD display.
+*    cl_demo_output=>display( lv_var ).
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*
+*  cl_demo_output=>write( '****************** OLD: GET REFERENCE OF ******************').
+*
+*  DATA: lv_string TYPE string,
+*        lo_ref    TYPE REF TO data.
+*
+*  lv_string = 'SAP'.
+*
+*  GET REFERENCE OF lv_string INTO lo_ref.
+*
+*  DATA(lo_ref_1) = NEW lcl_class( lo_ref ).
+*
+*  lo_ref_1->display( ).
+*
+*  cl_demo_output=>write( '********************* NEW: REF ****************************').
+*
+*  DATA(lo_ref_2) = NEW lcl_class( REF #('SAP') ).
+*
+*  lo_ref_2->display( ).
+*
+*  cl_demo_output=>display( ).
+
+*Internal table as Data Source............................................................................................................................................
+***************** example1 *************************************
+*SELECT carrid, currcode
+*  FROM scarr
+*  INTO TABLE @DATA(lt_scarr_1).
+*
+*DATA(lt_scarr_2) = lt_scarr_1.
+*CLEAR lt_scarr_2.
+*
+*lt_scarr_2 = VALUE #( FOR ls_scarr IN lt_scarr_1 WHERE (  currcode = 'USD' )
+*                   ( carrid = ls_scarr-carrid currcode = ls_scarr-currcode ) ).
+*
+*cl_demo_output=>display( lt_scarr_2 ).
+*
+*SELECT carrid, currcode
+*  FROM @lt_scarr_1 AS scarr_alias
+* WHERE currcode = 'USD'
+*  INTO TABLE @DATA(lt_scarr_itab) .
+*
+*cl_demo_output=>display( lt_scarr_itab ).
+
+
+***************** example2 *************************************
+
+*PARAMETERS: p_date TYPE s_date.
+*
+*SELECT carrid, carrname FROM scarr INTO TABLE @DATA(lt_scarr) WHERE currcode = 'USD'.
+*
+*IF sy-subrc EQ 0.
+*
+**  for all entries will not work with group by clause or with aggregate expressions
+*
+*   select carrid, fldate, class, loccuram " SUM( loccuram ) AS amount
+*    from sbook
+*    for all entries in @lt_scarr
+*    WHERE carrid = @lt_scarr-carrid AND fldate EQ @p_date
+**    GROUP BY a~carrid,a~fldate,a~class
+*     INTO TABLE @DATA(lt_sbookk).
+*
+**    cl_demo_output=>display( lt_sbookk ).
+*
+*    SELECT a~carrid, a~fldate, a~class, SUM( a~loccuram ) AS amount
+*      FROM sbook AS a
+*     INNER JOIN @lt_scarr AS b ON a~carrid = b~carrid
+*     WHERE a~fldate EQ @p_date
+*     GROUP BY a~carrid,a~fldate,a~class
+*     ORDER BY a~carrid
+*      INTO TABLE @DATA(lt_sbook).
+*
+*    cl_demo_output=>display( lt_sbook ).
+*
+*  ENDIF.
+
+
+*final inline declaration......................................................................................................................................
+*DATA lv_count TYPE i.
+*
+*SELECT * FROM scarr INTO TABLE @DATA(lt_tab).
+*
+*LOOP AT lt_tab INTO DATA(ls_tab) WHERE currcode EQ 'USD' .
+*
+*  lv_count = lv_count + 1.
+*
+*  FINAL(lv_final_count) = lv_count.
+*
+*ENDLOOP.
+*
+*lv_final_count = 10.
+*
+*WRITE: lv_final_count.
