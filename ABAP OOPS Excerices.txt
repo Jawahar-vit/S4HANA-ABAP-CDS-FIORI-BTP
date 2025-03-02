@@ -1,0 +1,215 @@
+﻿ABAP OOPS : 
+Exercise -1 
+
+
+CLASS z_account_details DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+  PUBLIC SECTION.
+  INTERFACES if_oo_adt_classrun.
+    DATA: BALANCE TYPE DMBTR.
+    METHODS:
+      DEPOSIT
+        IMPORTING
+          VALUE(AMOUNT) TYPE DMBTR
+        RETURNING
+          VALUE(NEW_BALANCE) TYPE DMBTR,
+      WITHDRAW
+        IMPORTING
+          VALUE(AMOUNT) TYPE DMBTR
+        RETURNING
+          VALUE(NEW_BALANCE) TYPE DMBTR
+        EXCEPTIONS
+          INSUFFICIENT_FUNDS,
+      SET_BALANCE
+        IMPORTING
+          VALUE(NEW_BALANCE) TYPE DMBTR.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS z_account_details IMPLEMENTATION.
+METHOD DEPOSIT.
+    BALANCE = BALANCE + AMOUNT.
+    NEW_BALANCE = BALANCE.
+  ENDMETHOD.
+  METHOD SET_BALANCE.
+    BALANCE = NEW_BALANCE.
+  ENDMETHOD.
+  METHOD WITHDRAW.
+    IF BALANCE >= AMOUNT.
+      BALANCE = BALANCE - AMOUNT.
+      NEW_BALANCE = BALANCE.
+    ELSE.
+      RAISE INSUFFICIENT_FUNDS.
+    ENDIF.
+  ENDMETHOD.
+  METHOD if_oo_adt_classrun~main.
+    DATA: lv_new_balance TYPE DMBTR.
+    CALL METHOD DEPOSIT
+      EXPORTING
+        AMOUNT = '1000'
+      RECEIVING
+        NEW_BALANCE = lv_new_balance.
+    " You can add further logic here to use lv_new_balance
+    out->write( 'new balance = ' && lv_new_balance ).
+    CALL METHOD DEPOSIT
+      EXPORTING
+        AMOUNT = '1000'
+      RECEIVING
+        NEW_BALANCE = lv_new_balance.
+    " You can add further logic here to use lv_new_balance
+    out->write( 'new balance = ' && lv_new_balance ).
+ " With draw amount
+    CALL METHOD WITHDRAW
+      EXPORTING
+        AMOUNT = '100'
+      RECEIVING
+        NEW_BALANCE = lv_new_balance.
+out->write( 'new balance = ' && lv_new_balance ).
+  ENDMETHOD.
+ENDCLASS.
+
+
+
+
+Exercise -2 : 
+
+
+@EndUserText.label : 'Complex Case Distinction'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zcomcase_dist_dj {
+  key client     : abap.clnt not null;
+  key bus_id     : abap.int2 not null;
+  bus_name       : abap.char(15);
+  total_seat     : abap.int2;
+  seats_occupied : abap.int2;
+  state_code     : abap.char(4);
+}
+
+
+
+
+
+
+Test class  : 
+
+
+CLASS zcl_comcase_dist_test DEFINITION
+  INHERITING FROM cl_gui_alv_grid
+  FINAL
+  CREATE PUBLIC.
+
+
+  PUBLIC SECTION.
+    METHODS: run.
+
+
+  PRIVATE SECTION.
+    METHODS: insert_test_data.
+ENDCLASS.
+
+
+CLASS zcl_comcase_dist_test IMPLEMENTATION.
+
+
+  METHOD run.
+    insert_test_data( ).
+  ENDMETHOD.
+
+
+  METHOD insert_test_data.
+    DATA: lt_data TYPE TABLE OF zcomcase_dist_dj,
+          ls_data TYPE zcomcase_dist_dj.
+
+
+    " Populate test data
+    DO 10 TIMES.
+      CLEAR ls_data.
+      ls_data-client = sy-mandt. " Current client
+      ls_data-bus_id = sy-index. " Example bus ID
+      ls_data-bus_name = |Bus { sy-index }|.
+      ls_data-total_seat = 50 + sy-index. " Total seats incrementing
+      ls_data-seats_occupied = sy-index * 5. " Occupied seats as an example
+      ls_data-state_code = |SC{ sy-index MOD 10 }|. " Example state code
+
+
+      APPEND ls_data TO lt_data.
+    ENDDO.
+
+
+    " Insert data into the database table
+    INSERT zcomcase_dist_dj FROM TABLE lt_data.
+    
+    IF sy-subrc = 0.
+      WRITE: / 'Test data inserted successfully.'.
+    ELSE.
+      WRITE: / 'Failed to insert test data.'.
+    ENDIF.
+  ENDMETHOD.
+
+
+ENDCLASS.
+
+
+
+
+
+
+ 
+CLASS zagg_func_dj DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS zagg_func_dj IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    select from zcomcase_dist_dj
+           FIELDS sum( seats_occupied ) as sum,
+                  max( seats_occupied ) as MAX,
+                  min( seats_occupied ) as MIN,
+                  avg( seats_occupied ) as AVG,
+                  count( * ) as count,
+                  count( DISTINCT total_seat ) as Count_Distinct
+           into table @data(result).
+           out->write( result ).
+  ENDMETHOD.
+ENDCLASS.
+
+
+
+
+Exercise - 3:
+CLASS zarith_exp_dj DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS zarith_exp_dj IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+   select from zcomcase_dist_dj
+   fields bus_id as BUS_ID,
+           bus_name as BUS_NAME,
+           total_seat as TOTAL_SEAT,
+           seats_occupied as SEATS_OCCUPIED,
+           ( cast( seats_occupied as fltp )
+                * cast( 100 as fltp ) ) /
+                cast( total_seat as fltp ) as percentage_fltp,
+           div( seats_occupied * 100, total_seat ) as percentage_int,
+           DIVISION( seats_occupied * 100, total_seat,5 ) as percentage_dec,
+           round( DIVISION( seats_occupied * 100, total_seat, 5 ),2 ) as Round_of_Percentage_dec
+    into table @data(result).
+    out->write( result ).
+  ENDMETHOD.
+ENDCLASS.
