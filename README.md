@@ -1,2 +1,2 @@
-# S-4-ABAP
+# S/4 HANA - ABAP
 ABAP related topics
